@@ -9,7 +9,7 @@ const url = require('url')
 
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
-let mainWindow
+let mainWindow, _debugger;
 
 function createWindow () {
   // Create the browser window.
@@ -22,6 +22,15 @@ function createWindow () {
     slashes: true
   }))
 
+    _debugger = mainWindow.webContents.debugger;
+    _debugger.on('message', (evt, method, params)=>{
+        if (method=='Debugger.scriptParsed')
+            return console.log(method, params.url);
+        console.log('DEBUGGER', method, params);
+    });
+    _debugger.attach('1.2');
+    _debugger.sendCommand('Debugger.enable');
+    _debugger.sendCommand('Runtime.enable');
   // Open the DevTools.
   // mainWindow.webContents.openDevTools()
 
